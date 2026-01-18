@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Académie</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Styles légers فقط لهذه الصفحة (بدون toucher style.css) */
+    .hero{
+      border-radius: 18px;
+      padding: 22px;
+      background: linear-gradient(135deg, rgba(99,102,241,.12), rgba(16,185,129,.12));
+      border: 1px solid rgba(0,0,0,.08);
+      margin-bottom: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      top:-60px; right:-60px;
+      width:180px; height:180px;
+      background: radial-gradient(circle, rgba(99,102,241,.25), transparent 60%);
+      filter: blur(0px);
+    }
+    .hero h1{ margin: 0 0 6px; font-size: 28px; }
+    .hero .subtitle{ opacity:.9; max-width: 62ch; }
+    .badges{ display:flex; gap:8px; flex-wrap:wrap; margin-top: 12px; }
+    .badge2{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.12);
+      background: rgba(255,255,255,.6);
+      backdrop-filter: blur(6px);
+    }
+    .hero-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 16px; }
+    .btn-secondary{
+      display:inline-block;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.12);
+      text-decoration:none;
+      color: inherit;
+      background: rgba(255,255,255,.6);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .stat{
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.7);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .stat .n{ font-size: 18px; font-weight: 700; }
+    .stat .l{ opacity: .85; font-size: 13px; }
+
+    .cards-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .mini-card{
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,.7);
+    }
+    .mini-card h3{ margin: 0 0 8px; font-size: 16px; }
+    .mini-card p{ margin: 0; opacity: .9; }
+
+    .timeline{
+      margin-top: 10px;
+      display:grid;
+      gap: 10px;
+    }
+    .step{
+      display:flex;
+      gap: 12px;
+      align-items:flex-start;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255,255,255,.7);
+    }
+    .dot{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(0,0,0,.12);
+      background: rgba(99,102,241,.12);
+      flex: 0 0 auto;
+      font-weight: 700;
+    }
+    .step h4{ margin: 0 0 4px; }
+    .step p{ margin: 0; opacity: .9; }
+
+    @media (max-width: 900px){
+      .stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .cards-grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="index.html" aria-label="Accueil">🏠</a>
+      <span>/</span><span>Académie</span>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+      <h1>Académie 📚</h1>
+      <p class="subtitle">
+        Apprends les bases de données <strong>pas à pas</strong> : cours organisés en chapitres,
+        exemples clairs, et travaux pratiques (SQL &amp; requêtes) pour progresser vite.
+      </p>
+
+      <div class="badges">
+        <span class="badge2">✅ Chapitres + sommaire</span>
+        <span class="badge2">⏱️ Temps de lecture</span>
+        <span class="badge2">🧩 Exemples &amp; mini-quiz</span>
+        <span class="badge2">🎥 TP en vidéo (à partir du Chap 6)</span>
+      </div>
+
+      <div class="hero-actions">
+        <a class="btn" href="cours/index.html">Accéder au cours “Bases de données”</a>
+        <a class="btn-secondary" href="cours/index.html#chapitres">Voir tous les chapitres</a>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="card subtle">
+      <h2 style="margin-top:0;">Ton parcours en un coup d’œil</h2>
+      <div class="stats">
+        <div class="stat">
+          <div class="n">6+</div>
+          <div class="l">Chapitres (BD → SQL)</div>
+        </div>
+        <div class="stat">
+          <div class="n">3</div>
+          <div class="l">Piliers : MCD/MLD, Normalisation, SQL</div>
+        </div>
+        <div class="stat">
+          <div class="n">∞</div>
+          <div class="l">Exercices possibles (SELECT, JOIN, GROUP BY…)</div>
+        </div>
+        <div class="stat">
+          <div class="n">🎯</div>
+          <div class="l">Objectif : autonomie en bases de données</div>
+        </div>
+      </div>
+      <p style="margin:0; opacity:.9;">
+        Chaque chapitre est construit pour te donner <strong>la théorie + l’application</strong>.
+      </p>
+    </section>
+
+    <!-- CONTENU -->
+    <section class="card">
+      <h2 style="margin-top:0;">Ce que tu vas apprendre</h2>
+
+      <div class="cards-grid">
+        <div class="mini-card">
+          <h3>1) Fondamentaux</h3>
+          <p>
+            BD, SGBD, tables, attributs, clés, relations… pour comprendre le langage des bases.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>2) Modélisation</h3>
+          <p>
+            MCD → MLD, intégrité, traduction en tables, et schéma relationnel propre.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>3) SQL &amp; pratique</h3>
+          <p>
+            CREATE/INSERT/SELECT, JOIN, GROUP BY, sous-requêtes, contraintes… avec TP vidéo.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:14px;">
+        <div class="info">
+          <h2>Dynamique du site</h2>
+          <ul>
+            <li>Un cours = plusieurs chapitres (intro, modèle relationnel, normalisation…)</li>
+            <li>Sommaire à droite pour naviguer rapidement</li>
+            <li>Temps estimé pour planifier l’apprentissage</li>
+          </ul>
+        </div>
+
+        <div class="info">
+          <h2>Contenu disponible</h2>
+          <ul>
+            <li>Notions BD : tables, clés, contraintes</li>
+            <li>Normalisation : DF, 1FN/2FN/3FN/BCNF</li>
+            <li>SQL : requêtes + TP (vidéos)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta">
+        <a class="btn" href="cours/index.html">Commencer maintenant</a>
+      </div>
+    </section>
+
+    <!-- PARCOURS -->
+    <section class="card subtle">
+      <h2 style="margin-top:0;">Parcours recommandé</h2>
+
+      <div class="timeline">
+        <div class="step">
+          <div class="dot">1</div>
+          <div>
+            <h4>Comprendre les bases</h4>
+            <p>Vocabulaire : relation, tuple, attribut, domaine, clés…</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="dot">2</div>
+          <div>
+            <h4>Construire un schéma propre</h4>
+            <p>MCD → MLD et intégrités : éviter les incohérences.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="dot">3</div>
+          <div>
+            <h4>Normaliser</h4>
+            <p>Dépendances fonctionnelles + formes normales pour éviter les anomalies.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="dot">4</div>
+          <div>
+            <h4>Passer à SQL</h4>
+            <p>DDL/DML, requêtes SELECT, JOIN, GROUP BY et sous-requêtes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OBJECTIF -->
+    <section class="card">
+      <h2 style="margin-top:0;">Objectif</h2>
+      <p class="lead" style="margin-bottom:0;">
+        Comprendre les bases de données et pratiquer SQL pour <strong>créer</strong>,
+        <strong>manipuler</strong> et <strong>analyser</strong> des données dans des projets réels.
+      </p>
+    </section>
+
+  </main>
+</body>
+</html>
