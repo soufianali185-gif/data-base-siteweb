@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapitre 6 - Le langage SQL</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="../index.html" aria-label="Accueil">🏠</a>
+      <span>/</span><a href="../index.html">Académie</a>
+      <span>/</span><a href="index.html">Cours Bases de données</a>
+      <span>/</span><span>Chapitre 6 : Le langage SQL</span>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <article class="content">
+      <div class="meta">
+        <span>Temps de lecture approximative :</span>
+        <span class="badge" id="readingTime">—</span>
+      </div>
+
+      <h1 id="chap6">Chapitre 6 : Le langage SQL</h1>
+
+      <p>
+        Le <strong>SQL (Structured Query Language)</strong> est le langage standard utilisé pour :
+      </p>
+      <ul>
+        <li><strong>définir</strong> la structure d’une base de données (tables, contraintes…)</li>
+        <li><strong>manipuler</strong> les données (ajouter, modifier, supprimer, consulter)</li>
+        <li><strong>interroger</strong> les données avec des requêtes (SELECT, JOIN, GROUP BY…)</li>
+      </ul>
+
+      <p>On distingue principalement :</p>
+      <ul>
+        <li><strong>DDL</strong> (Data Definition Language) : définition des objets</li>
+        <li><strong>DML</strong> (Data Manipulation Language) : manipulation des données</li>
+        <li>(souvent aussi <strong>DCL</strong> : droits, et <strong>TCL</strong> : transactions — ici on se limite au programme)</li>
+      </ul>
+
+      <div class="callout good">
+        <strong>Objectifs</strong><br/>
+        Comprendre DDL/DML, écrire des requêtes SELECT (filtrage, jointures, sous-requêtes),
+        utiliser GROUP BY / HAVING, et appliquer les contraintes (PK/FK/UNIQUE/CHECK).
+      </div>
+
+      <h2 id="ddl">1) SQL de définition (DDL)</h2>
+
+      <h3 id="create">1.1 CREATE : créer une base, une table</h3>
+
+      <h4 id="create-db">Créer une base de données</h4>
+      <pre><code class="language-sql">CREATE DATABASE Universite;</code></pre>
+
+      <h4 id="create-table">Créer une table</h4>
+      <pre><code class="language-sql">CREATE TABLE ETUDIANT (
+  NumEtu INT PRIMARY KEY,
+  Nom VARCHAR(50) NOT NULL,
+  Prenom VARCHAR(50),
+  DateNaissance DATE,
+  CodeFiliere VARCHAR(10)
+);</code></pre>
+
+      <div class="callout good">
+        <strong>Remarques</strong><br/>
+        <ul>
+          <li><code>NumEtu</code> est une <strong>clé primaire</strong></li>
+          <li><code>Nom</code> est <strong>obligatoire</strong> grâce à <code>NOT NULL</code></li>
+        </ul>
+      </div>
+
+      <h3 id="alter">1.2 ALTER : modifier une table</h3>
+
+      <h4 id="alter-add-column">Ajouter une colonne</h4>
+      <pre><code class="language-sql">ALTER TABLE ETUDIANT
+ADD Email VARCHAR(100);</code></pre>
+
+      <h4 id="alter-modify-type">Modifier le type d’une colonne</h4>
+      <pre><code class="language-sql">ALTER TABLE ETUDIANT
+ALTER COLUMN Email TYPE VARCHAR(150);</code></pre>
+
+      <div class="callout warn">
+        <strong>Attention</strong><br/>
+        La syntaxe dépend parfois du SGBD (MySQL, PostgreSQL, SQL Server…).
+      </div>
+
+      <h4 id="alter-add-constraint">Ajouter une contrainte</h4>
+      <pre><code class="language-sql">ALTER TABLE ETUDIANT
+ADD CONSTRAINT uq_email UNIQUE (Email);</code></pre>
+
+      <h3 id="drop">1.3 DROP : supprimer un objet</h3>
+
+      <h4 id="drop-table">Supprimer une table</h4>
+      <pre><code class="language-sql">DROP TABLE ETUDIANT;</code></pre>
+
+      <h4 id="drop-db">Supprimer une base</h4>
+      <pre><code class="language-sql">DROP DATABASE Universite;</code></pre>
+
+      <div class="callout warn">
+        <strong>Attention</strong><br/>
+        <code>DROP</code> supprime <strong>définitivement</strong> les données.
+      </div>
+
+      <h2 id="dml">2) SQL de manipulation (DML)</h2>
+
+      <h3 id="insert">2.1 INSERT : ajouter des données</h3>
+      <pre><code class="language-sql">INSERT INTO ETUDIANT (NumEtu, Nom, Prenom, CodeFiliere)
+VALUES (2024001, 'Alami', 'Hassan', 'INFO');</code></pre>
+
+      <p>Ajouter plusieurs lignes :</p>
+      <pre><code class="language-sql">INSERT INTO ETUDIANT VALUES
+(2024002, 'Bennani', 'Fatima', '2002-08-22', 'GESTION'),
+(2024003, 'Chakir', 'Ahmed', '2003-12-10', 'INFO');</code></pre>
+
+      <h3 id="update">2.2 UPDATE : modifier des données</h3>
+      <pre><code class="language-sql">UPDATE ETUDIANT
+SET CodeFiliere = 'GESTION'
+WHERE NumEtu = 2024003;</code></pre>
+
+      <div class="callout warn">
+        <strong>Important</strong><br/>
+        Sans <code>WHERE</code> → la requête modifie <strong>toute la table</strong>.
+      </div>
+
+      <h3 id="delete">2.3 DELETE : supprimer des données</h3>
+      <pre><code class="language-sql">DELETE FROM ETUDIANT
+WHERE NumEtu = 2024002;</code></pre>
+
+      <div class="callout warn">
+        <strong>Important</strong><br/>
+        Sans <code>WHERE</code> → la requête supprime <strong>toutes les lignes</strong>.
+      </div>
+
+      <h3 id="select">2.4 SELECT : interroger les données</h3>
+
+      <h4 id="select-simple">Sélection simple</h4>
+      <pre><code class="language-sql">SELECT * FROM ETUDIANT;</code></pre>
+
+      <h4 id="select-columns">Choisir des colonnes</h4>
+      <pre><code class="language-sql">SELECT Nom, Prenom FROM ETUDIANT;</code></pre>
+
+      <h4 id="select-distinct">DISTINCT (supprimer doublons)</h4>
+      <pre><code class="language-sql">SELECT DISTINCT CodeFiliere FROM ETUDIANT;</code></pre>
+
+      <h2 id="filtrage-join-sub">3) Filtrage : WHERE, JOIN, Sous-requêtes</h2>
+
+      <h3 id="where">3.1 WHERE : filtrer les lignes</h3>
+      <pre><code class="language-sql">SELECT *
+FROM ETUDIANT
+WHERE CodeFiliere = 'INFO';</code></pre>
+
+      <p>Conditions utiles :</p>
+      <ul>
+        <li><code>AND</code> / <code>OR</code></li>
+        <li><code>BETWEEN</code></li>
+        <li><code>IN</code></li>
+        <li><code>LIKE</code></li>
+      </ul>
+
+      <p>Exemples :</p>
+      <pre><code class="language-sql">SELECT *
+FROM INSCRIPTION
+WHERE Note BETWEEN 10 AND 20;</code></pre>
+
+      <pre><code class="language-sql">SELECT *
+FROM ETUDIANT
+WHERE Nom LIKE 'A%';</code></pre>
+
+      <h3 id="join">3.2 JOIN : relier des tables</h3>
+
+      <h4 id="inner-join">a) INNER JOIN (jointure interne)</h4>
+      <p>Renvoie seulement les lignes qui ont une correspondance dans les deux tables.</p>
+      <pre><code class="language-sql">SELECT e.NumEtu, e.Nom, f.NomFiliere
+FROM ETUDIANT e
+INNER JOIN FILIERE f ON e.CodeFiliere = f.CodeFiliere;</code></pre>
+
+      <h4 id="left-join">b) LEFT JOIN (jointure externe gauche)</h4>
+      <p>Renvoie tous les étudiants, même ceux sans filière (NULL côté FILIERE).</p>
+      <pre><code class="language-sql">SELECT e.NumEtu, e.Nom, f.NomFiliere
+FROM ETUDIANT e
+LEFT JOIN FILIERE f ON e.CodeFiliere = f.CodeFiliere;</code></pre>
+
+      <h4 id="right-join">c) RIGHT JOIN (externe droite)</h4>
+      <p>Renvoie toutes les filières, même celles sans étudiant (pas toujours supporté / utilisé).</p>
+      <pre><code class="language-sql">SELECT e.NumEtu, e.Nom, f.NomFiliere
+FROM ETUDIANT e
+RIGHT JOIN FILIERE f ON e.CodeFiliere = f.CodeFiliere;</code></pre>
+
+      <h4 id="full-outer-join">d) FULL OUTER JOIN (complet)</h4>
+      <p>
+        Renvoie tout des deux côtés (selon SGBD). Ex : PostgreSQL le supporte, MySQL non (il faut simuler).
+      </p>
+
+      <h3 id="subqueries">3.3 Sous-requêtes (Subqueries)</h3>
+
+      <h4 id="in-subquery">Exemple : étudiants inscrits à BD1 (IN)</h4>
+      <pre><code class="language-sql">SELECT Nom, Prenom
+FROM ETUDIANT
+WHERE NumEtu IN (
+  SELECT NumEtu
+  FROM INSCRIPTION
+  WHERE CodeCours = 'BD1'
+);</code></pre>
+
+      <h4 id="exists-subquery">Sous-requête avec EXISTS</h4>
+      <pre><code class="language-sql">SELECT e.Nom, e.Prenom
+FROM ETUDIANT e
+WHERE EXISTS (
+  SELECT 1
+  FROM INSCRIPTION i
+  WHERE i.NumEtu = e.NumEtu
+);</code></pre>
+
+      <h2 id="groupby-having">4) Regroupement : GROUP BY, HAVING, Agrégation</h2>
+
+      <h3 id="agregation">4.1 Fonctions d’agrégation</h3>
+      <ul>
+        <li><code>COUNT(*)</code> : nombre de lignes</li>
+        <li><code>SUM(x)</code> : somme</li>
+        <li><code>AVG(x)</code> : moyenne</li>
+        <li><code>MIN(x)</code>, <code>MAX(x)</code></li>
+      </ul>
+
+      <h4 id="count-by-group">Exemple : nombre d’étudiants par filière</h4>
+      <pre><code class="language-sql">SELECT CodeFiliere, COUNT(*) AS NbEtudiants
+FROM ETUDIANT
+GROUP BY CodeFiliere;</code></pre>
+
+      <h3 id="having">4.2 HAVING (filtrer après GROUP BY)</h3>
+      <h4 id="having-example">Exemple : filières ayant plus de 50 étudiants</h4>
+      <pre><code class="language-sql">SELECT CodeFiliere, COUNT(*) AS NbEtudiants
+FROM ETUDIANT
+GROUP BY CodeFiliere
+HAVING COUNT(*) > 50;</code></pre>
+
+      <div class="callout good">
+        <strong>Différence WHERE vs HAVING</strong><br/>
+        <ul>
+          <li><code>WHERE</code> filtre les lignes <strong>avant</strong> regroupement</li>
+          <li><code>HAVING</code> filtre les groupes <strong>après</strong> regroupement</li>
+        </ul>
+      </div>
+
+      <h2 id="contraintes">5) Contraintes SQL (intégrité)</h2>
+
+      <h3 id="pk">5.1 PRIMARY KEY</h3>
+      <p><code>PRIMARY KEY</code> implique <strong>UNIQUE</strong> + <strong>NOT NULL</strong>.</p>
+      <pre><code class="language-sql">NumEtu INT PRIMARY KEY</code></pre>
+
+      <h3 id="fk">5.2 FOREIGN KEY</h3>
+      <p>
+        Assure l’intégrité référentielle : la valeur doit exister dans la table référencée.
+      </p>
+      <pre><code class="language-sql">CodeFiliere VARCHAR(10),
+FOREIGN KEY (CodeFiliere) REFERENCES FILIERE(CodeFiliere)</code></pre>
+
+      <p>Avec actions :</p>
+      <pre><code class="language-sql">FOREIGN KEY (CodeFiliere) REFERENCES FILIERE(CodeFiliere)
+ON DELETE SET NULL
+ON UPDATE CASCADE</code></pre>
+
+      <h3 id="unique">5.3 UNIQUE</h3>
+      <pre><code class="language-sql">Email VARCHAR(100) UNIQUE</code></pre>
+
+      <h3 id="check">5.4 CHECK</h3>
+      <pre><code class="language-sql">Note DECIMAL(4,2) CHECK (Note >= 0 AND Note <= 20)</code></pre>
+
+      <h3 id="notnull">5.5 NOT NULL</h3>
+      <pre><code class="language-sql">Nom VARCHAR(50) NOT NULL</code></pre>
+
+      <h2 id="exemple-complet">6) Exemple complet : création + contraintes + données</h2>
+
+      <pre><code class="language-sql">CREATE TABLE FILIERE (
+  CodeFiliere VARCHAR(10) PRIMARY KEY,
+  NomFiliere VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ETUDIANT (
+  NumEtu INT PRIMARY KEY,
+  Nom VARCHAR(50) NOT NULL,
+  Prenom VARCHAR(50),
+  Email VARCHAR(100) UNIQUE,
+  CodeFiliere VARCHAR(10),
+  FOREIGN KEY (CodeFiliere) REFERENCES FILIERE(CodeFiliere)
+);
+
+INSERT INTO FILIERE VALUES ('INFO', 'Informatique');
+INSERT INTO ETUDIANT VALUES (2024001, 'Alami', 'Hassan', 'h.alami@gmail.com', 'INFO');</code></pre>
+
+      <h2 id="tp-videos">Travaux pratiques (vidéos)</h2>
+      <div class="callout good">
+        <strong>TP (format vidéo)</strong><br/>
+        Ici tu peux ajouter tes vidéos séparées : YouTube, Google Drive, ou des fichiers <code>.mp4</code> dans ton projet.
+      </div>
+
+      <h2 id="mini-quiz">Mini-quiz</h2>
+      <ol>
+        <li>Quelle est la différence entre DDL et DML ?</li>
+        <li>Pourquoi UPDATE/DELETE sans WHERE est dangereux ?</li>
+        <li>Différence entre WHERE et HAVING ?</li>
+        <li>Différence entre INNER JOIN et LEFT JOIN ?</li>
+        <li>Pourquoi on utilise une clé étrangère (FOREIGN KEY) ?</li>
+      </ol>
+
+    </article>
+
+    <aside class="sidebar">
+      <div class="sidebar-title">Sommaire</div>
+      <nav id="toc" class="toc"></nav>
+      <div class="sidebar-footer">
+        <a class="pill" href="index.html">Retour au sommaire</a>
+      </div>
+    </aside>
+  </main>
+
+  <script src="../js/page-toc.js"></script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapitre 4 - Dépendances fonctionnelles & Normalisation</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="../index.html" aria-label="Accueil">🏠</a>
+      <span>/</span><a href="../index.html">Académie</a>
+      <span>/</span><a href="index.html">Cours Bases de données</a>
+      <span>/</span><span>Chapitre 4 : Normalisation</span>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <article class="content">
+      <div class="meta">
+        <span>Temps de lecture approximative :</span>
+        <span class="badge" id="readingTime">—</span>
+      </div>
+
+      <h1 id="chap4">Chapitre 4 : Dépendances Fonctionnelles et Normalisation</h1>
+
+      <p>
+        Dans ce chapitre, tu vas apprendre à définir les <strong>dépendances fonctionnelles (DF)</strong>,
+        calculer une <strong>fermeture</strong> (<code>X+</code>), trouver les <strong>clés candidates</strong>,
+        construire une <strong>couverture minimale</strong>, vérifier les <strong>formes normales</strong>
+        (1FN, 2FN, 3FN, BCNF) et réaliser une <strong>décomposition</strong> (sans perte + préservation des DF).
+      </p>
+
+      <div class="callout good">
+        <strong>Objectifs</strong><br/>
+        Identifier des DF, calculer <code>X+</code>, déterminer les clés, appliquer 1FN/2FN/3FN/BCNF,
+        décomposer sans perte et vérifier la préservation des dépendances.
+      </div>
+
+      <h2 id="pourquoi-normaliser">0) Pourquoi normaliser ?</h2>
+      <p>
+        Quand une table est mal conçue, on observe souvent : <strong>redondance</strong>,
+        <strong>incohérences</strong> et <strong>difficulté de mise à jour</strong>.
+        La normalisation sert à organiser les attributs en tables cohérentes pour éviter les anomalies.
+      </p>
+
+      <h3 id="anomalies">0.1 Anomalies classiques</h3>
+      <ul>
+        <li><strong>Anomalie d’insertion</strong> : impossible d’ajouter une info sans une autre</li>
+        <li><strong>Anomalie de suppression</strong> : supprimer une ligne fait perdre une info importante</li>
+        <li><strong>Anomalie de mise à jour</strong> : la même info existe plusieurs fois → incohérence</li>
+      </ul>
+
+      <figure class="figure-card">
+        <img src="img/chap4-anomalies.png" alt="Anomalies d'insertion, suppression et mise à jour" />
+        <figcaption>Les anomalies justifient la normalisation (réduction de redondance et incohérences).</figcaption>
+      </figure>
+
+      <h2 id="df">1) Dépendances Fonctionnelles (DF)</h2>
+
+      <h3 id="df-definition">1.1 Définition formelle</h3>
+      <p>
+        Soit une relation <code>R(A1, A2, …, An)</code>. Soient <code>X</code> et <code>Y</code> deux ensembles
+        d’attributs de <code>R</code>. On dit que <code>X → Y</code> si :
+      </p>
+      <blockquote>
+        Pour tous tuples t1 et t2 de R, si t1[X] = t2[X] alors t1[Y] = t2[Y].
+      </blockquote>
+      <p><strong>Idée :</strong> même X ⇒ même Y.</p>
+
+      <figure class="figure-card">
+        <img src="img/chap4-dependance-fonctionnelle.png" alt="Définition DF X détermine Y" />
+        <figcaption>Une DF exprime qu’un ensemble d’attributs (déterminant) impose la valeur d’un autre.</figcaption>
+      </figure>
+
+      <h3 id="df-reconnaitre">1.2 Reconnaître une DF (règle métier)</h3>
+      <p>Une DF correspond souvent à une règle métier :</p>
+      <ul>
+        <li>“Chaque étudiant a un seul nom” ⇒ <code>NumEtudiant → Nom</code></li>
+        <li>“Chaque filière a un seul nom” ⇒ <code>CodeFiliere → NomFiliere</code></li>
+        <li>“Chaque cours a un seul intitulé” ⇒ <code>CodeCours → Intitule</code></li>
+      </ul>
+
+      <h3 id="df-triviale">1.3 DF triviale / non triviale</h3>
+      <ul>
+        <li><strong>Triviale</strong> si <code>Y ⊆ X</code> (ex : <code>(Num, Nom) → Nom</code>)</li>
+        <li><strong>Non triviale</strong> sinon (ex : <code>Num → Nom</code>)</li>
+      </ul>
+
+      <h3 id="df-partielle-complete-transitive">1.4 DF partielle / complète / transitive</h3>
+
+      <h4 id="df-partielle">A) Dépendance partielle (problème de 2FN)</h4>
+      <p>
+        Quand la clé est <strong>composée</strong>, un attribut non-clé ne doit pas dépendre d’une partie seulement.
+      </p>
+      <p>
+        Exemple : <code>R(NumEtu, CodeCours, NomEtu, Note)</code> avec clé <code>(NumEtu, CodeCours)</code><br/>
+        Si <code>NumEtu → NomEtu</code>, alors <code>NomEtu</code> dépend partiellement.
+      </p>
+
+      <figure class="figure-card">
+        <img src="img/chap4-2nf-dependance-partielle.png" alt="Dépendance partielle (2FN)" />
+        <figcaption>Dépendance partielle : un attribut dépend d’une partie de la clé composée.</figcaption>
+      </figure>
+
+      <h4 id="df-complete">B) Dépendance complète</h4>
+      <p>
+        L’attribut dépend de <strong>toute</strong> la clé : <code>(NumEtu, CodeCours) → Note</code>.
+      </p>
+
+      <h4 id="df-transitive">C) Dépendance transitive (problème de 3FN)</h4>
+      <p>
+        Si <code>NumEtu → CodeFiliere</code> et <code>CodeFiliere → NomFiliere</code>, alors
+        <code>NumEtu → NomFiliere</code> (transitive).
+      </p>
+
+      <figure class="figure-card">
+        <img src="img/chap4-3nf-dependance-transitive.png" alt="Dépendance transitive (3FN)" />
+        <figcaption>Dépendance transitive : viole la 3FN (dépendance indirecte via un attribut non-clé).</figcaption>
+      </figure>
+
+      <h2 id="fermeture">2) Fermeture d’attributs (X<sup>+</sup>)</h2>
+
+      <h3 id="fermeture-definition">2.1 Définition</h3>
+      <p>
+        La fermeture <code>X+</code> est l’ensemble des attributs que l’on peut déterminer à partir de <code>X</code>
+        grâce aux DF.
+      </p>
+      <ul>
+        <li>Vérifier si <code>X</code> est une <strong>clé</strong></li>
+        <li>Vérifier si une DF est <strong>impliquée</strong> par un ensemble de DF</li>
+      </ul>
+
+      <h3 id="fermeture-algo">2.2 Algorithme</h3>
+      <ol>
+        <li>Initialiser <code>X+ = X</code></li>
+        <li>Si <code>A → B</code> et <code>A ⊆ X+</code>, ajouter <code>B</code> à <code>X+</code></li>
+        <li>Répéter jusqu’à stabilisation</li>
+      </ol>
+
+      <h3 id="fermeture-exemple">2.3 Exemple complet</h3>
+      <p>R(A, B, C, D, E) avec DF :</p>
+      <ol>
+        <li>A → B</li>
+        <li>B → C</li>
+        <li>A, D → E</li>
+      </ol>
+      <p>
+        <strong>A+</strong> = {A, B, C} (D manque donc pas de E)<br/>
+        <strong>(A, D)+</strong> = {A, B, C, D, E} ⇒ (A, D) est super-clé.
+      </p>
+
+      <h2 id="couverture-minimale">3) Couverture minimale (couverture canonique)</h2>
+
+      <h3 id="couverture-definition">3.1 Définition</h3>
+      <p>
+        Une couverture minimale est un ensemble équivalent de DF mais <strong>simplifié</strong> :
+        un seul attribut à droite, pas d’attribut inutile à gauche, pas de DF redondante.
+      </p>
+
+      <h3 id="couverture-etapes">3.2 Étapes</h3>
+      <ol>
+        <li>Décomposer le RHS : <code>X → ABC</code> devient <code>X → A</code>, <code>X → B</code>, <code>X → C</code></li>
+        <li>Supprimer attributs inutiles à gauche (tests via fermetures)</li>
+        <li>Supprimer DF redondantes (si déduite des autres)</li>
+      </ol>
+
+      <h2 id="formes-normales">4) Formes normales</h2>
+
+      <h3 id="fn-1">4.1 1FN (Première forme normale)</h3>
+      <p>
+        Condition : attributs <strong>atomiques</strong> (pas de listes / pas de groupes répétitifs).
+      </p>
+      <figure class="figure-card">
+        <img src="img/chap4-1nf.png" alt="Problème de 1FN : groupes répétitifs" />
+        <figcaption>La 1FN interdit les groupes répétitifs (Customer1, Customer2, …) et les listes.</figcaption>
+      </figure>
+
+      <h3 id="fn-2">4.2 2FN (Deuxième forme normale)</h3>
+      <p>
+        Condition : être en 1FN et aucune dépendance partielle d’une clé composée.
+      </p>
+      <p><strong>Exemple :</strong> <code>INSCRIPTION(NumEtu, CodeCours, NomEtu, IntituleCours, Note)</code></p>
+      <ul>
+        <li><code>NumEtu → NomEtu</code> (partielle)</li>
+        <li><code>CodeCours → IntituleCours</code> (partielle)</li>
+        <li><code>(NumEtu, CodeCours) → Note</code> (complète)</li>
+      </ul>
+      <p><strong>Décomposition :</strong></p>
+      <pre><code>ETUDIANT(NumEtu, NomEtu)
+COURS(CodeCours, IntituleCours)
+INSCRIPTION(NumEtu, CodeCours, Note)</code></pre>
+
+      <h3 id="fn-3">4.3 3FN (Troisième forme normale)</h3>
+      <p>
+        Condition : être en 2FN et aucune dépendance transitive.
+      </p>
+      <p><strong>Exemple :</strong> <code>ETUDIANT(NumEtu, Nom, CodeFiliere, NomFiliere)</code></p>
+      <p>
+        <code>NumEtu → CodeFiliere</code> et <code>CodeFiliere → NomFiliere</code> ⇒ transitive.
+      </p>
+      <p><strong>Décomposition :</strong></p>
+      <pre><code>ETUDIANT(NumEtu, Nom, CodeFiliere)
+FILIERE(CodeFiliere, NomFiliere)</code></pre>
+
+      <h3 id="fn-bcnf">4.4 BCNF (Boyce-Codd)</h3>
+      <p>
+        Condition : pour toute DF non triviale <code>X → Y</code>, <code>X</code> doit être une <strong>super-clé</strong>.
+        BCNF est plus forte que 3FN.
+      </p>
+      <figure class="figure-card">
+        <img src="img/chap4-bcnf.png" alt="Exemple de violation BCNF" />
+        <figcaption>BCNF : tout déterminant (gauche) doit être une super-clé.</figcaption>
+      </figure>
+
+      <h2 id="decomposition">5) Décomposition : sans perte & préservation des DF</h2>
+
+      <h3 id="sans-perte">5.1 Décomposition sans perte (Lossless)</h3>
+      <p>
+        Une décomposition <code>R → R1, R2</code> est sans perte si la jointure naturelle
+        <code>R1 ⋈ R2</code> redonne exactement <code>R</code>.
+      </p>
+      <p><strong>Condition (2 tables) :</strong> <code>(R1 ∩ R2) → R1</code> OU <code>(R1 ∩ R2) → R2</code>.</p>
+
+      <figure class="figure-card">
+        <img src="img/chap4-decomposition-sans-perte.png" alt="Décomposition sans perte" />
+        <figcaption>Décomposition sans perte : la jointure restitue exactement la relation initiale.</figcaption>
+      </figure>
+
+      <h3 id="preservation-df">5.2 Préservation des dépendances</h3>
+      <p>
+        Une décomposition préserve les DF si on peut vérifier toutes les DF en contrôlant seulement
+        <code>R1</code> et <code>R2</code>, sans reconstruire <code>R</code>.
+      </p>
+
+      <figure class="figure-card">
+        <img src="img/chap4-preservation-dependances.png" alt="Préservation des dépendances fonctionnelles" />
+        <figcaption>Préservation : on peut valider les DF sur les tables décomposées sans refaire la grande table.</figcaption>
+      </figure>
+
+      <h2 id="exercice">6) Mini-exercice guidé (corrigé)</h2>
+      <p>Soit :</p>
+      <pre><code>R(NumEtu, NomEtu, CodeCours, IntituleCours, Note)</code></pre>
+      <p>DF :</p>
+      <ul>
+        <li><code>NumEtu → NomEtu</code></li>
+        <li><code>CodeCours → IntituleCours</code></li>
+        <li><code>(NumEtu, CodeCours) → Note</code></li>
+      </ul>
+
+      <h3 id="exercice-cle">6.1 Trouver la clé</h3>
+      <p>
+        Calculer <code>(NumEtu, CodeCours)+</code> : on obtient tous les attributs ⇒ c’est une clé.
+      </p>
+
+      <h3 id="exercice-2fn">6.2 Vérifier 2FN</h3>
+      <p>
+        <code>NomEtu</code> dépend de <code>NumEtu</code> seul ⇒ dépendance partielle ⇒ pas 2FN.
+      </p>
+
+      <h3 id="exercice-decomposition">6.3 Décomposer</h3>
+      <pre><code>ETUDIANT(NumEtu, NomEtu)
+COURS(CodeCours, IntituleCours)
+INSCRIPTION(NumEtu, CodeCours, Note)</code></pre>
+      <p>
+        Résultat : tables en 3FN (et souvent BCNF pour cet exemple).
+      </p>
+
+      <h2 id="mini-quiz">Mini-quiz</h2>
+      <ol>
+        <li>Donne un exemple de DF non triviale.</li>
+        <li>À quoi sert la fermeture <code>X+</code> ?</li>
+        <li>Différence entre 2FN et 3FN (problèmes visés) ?</li>
+        <li>Condition d’une décomposition sans perte (2 tables) ?</li>
+        <li>Que signifie “préserver les dépendances” ?</li>
+      </ol>
+    </article>
+
+    <aside class="sidebar">
+      <div class="sidebar-title">Sommaire</div>
+      <nav id="toc" class="toc"></nav>
+      <div class="sidebar-footer">
+        <a class="pill" href="index.html">Retour au sommaire</a>
+      </div>
+    </aside>
+  </main>
+
+  <script src="../js/page-toc.js"></script>
+</body>
+</html>

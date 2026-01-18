@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapitre 1 - Introduction</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="../index.html" aria-label="Accueil">🏠</a>
+      <span>/</span><a href="../index.html">Académie</a>
+      <span>/</span><a href="index.html">Cours Bases de données</a>
+      <span>/</span><span>Chapitre 1 : Introduction</span>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <article class="content">
+
+      <!-- ✅ TON CONTENU ICI (déjà prêt) -->
+      <div class="meta">
+        <span>Temps de lecture approximative :</span>
+        <span class="badge" id="readingTime">—</span>
+      </div>
+
+      <h1 id="chap1">Chapitre 1 : Introduction aux Systèmes de Gestion de Base de Données</h1>
+
+      <p>
+        Ce chapitre introduit les bases de données, le rôle d’un SGBD, la différence entre données et information,
+        les notions de schéma/instance/méta-données, ainsi que l’architecture ANSI/SPARC à trois niveaux.
+      </p>
+
+      <div class="callout good">
+        <strong>Objectifs</strong><br/>
+        À la fin de ce chapitre, tu dois être capable de : définir un SGBD, citer ses avantages,
+        distinguer donnée/information, expliquer schéma/instance/méta-données et décrire les 3 niveaux d’architecture.
+      </div>
+
+      <h2 id="definition-sgbd">1) Définition d’un SGBD</h2>
+
+      <p>
+        Un <strong>Système de Gestion de Base de Données (SGBD)</strong> est un logiciel qui permet de
+        <strong>créer</strong>, <strong>stocker</strong>, <strong>organiser</strong>, <strong>interroger</strong> et <strong>administrer</strong>
+        des données de manière <strong>fiable</strong> et <strong>sécurisée</strong>.
+      </p>
+
+      <figure class="figure-card">
+        <img src="img/chap1-intro-sgbd.png" alt="Utilisateur - SQL - SGBD - Base de données" />
+        <figcaption>
+          Interaction : l’utilisateur (ou l’application) envoie des requêtes SQL au SGBD, qui accède aux données stockées.
+        </figcaption>
+      </figure>
+
+      <h3 id="definition-formelle">Définition formelle</h3>
+      <p>
+        Le SGBD agit comme une <strong>interface</strong> entre les utilisateurs/applications et les données stockées.
+        Il permet de manipuler les données sans se préoccuper de leur organisation physique (fichiers, blocs disque).
+      </p>
+
+      <h3 id="exemples-sgbd">Exemples de SGBD</h3>
+      <ul>
+        <li><strong>Relationnels</strong> : MySQL, PostgreSQL, Oracle, SQL Server, MariaDB</li>
+        <li><strong>NoSQL</strong> (documents/clé-valeur/colonnes) : MongoDB, Cassandra, Redis</li>
+        <li><strong>Orientés objet</strong> : ObjectDB (plus rare)</li>
+      </ul>
+
+      <h3 id="composants-sgbd">Composants principaux (idée générale)</h3>
+      <ol>
+        <li><strong>Moteur de stockage</strong> : lecture/écriture des données</li>
+        <li><strong>Processeur de requêtes</strong> : exécute les commandes SQL</li>
+        <li><strong>Gestionnaire de transactions</strong> : cohérence des données (ACID)</li>
+        <li><strong>Gestionnaire de sécurité</strong> : comptes, rôles, permissions</li>
+      </ol>
+
+      <div class="callout good">
+        <strong>À retenir</strong><br/>
+        Base de données = <em>données</em>. SGBD = <em>logiciel</em> qui gère ces données (accès, sécurité, requêtes, sauvegarde…).
+      </div>
+
+      <h2 id="roles-avantages">2) Rôles et avantages des bases de données</h2>
+
+      <h3 id="roles">Rôles principaux</h3>
+      <ul>
+        <li><strong>Centralisation</strong> : données regroupées et gérées de façon cohérente</li>
+        <li><strong>Partage</strong> : plusieurs utilisateurs/applications peuvent accéder aux mêmes données</li>
+        <li><strong>Réduction de la redondance</strong> : moins de duplication → moins d’erreurs</li>
+        <li><strong>Intégrité</strong> : contraintes (clé primaire, clé étrangère, unicité…)</li>
+      </ul>
+
+      <h3 id="avantages">Avantages concrets</h3>
+      <ul>
+        <li><strong>Indépendance données/programmes</strong> : changer la structure sans tout recoder</li>
+        <li><strong>Sécurité</strong> : gestion des droits d’accès (lecture/écriture)</li>
+        <li><strong>Concurrence</strong> : plusieurs utilisateurs en même temps sans conflit</li>
+        <li><strong>Sauvegarde / restauration</strong> : récupération en cas de panne</li>
+        <li><strong>Analyse</strong> : statistiques, reporting, tableaux de bord</li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>Attention</strong><br/>
+        Sans base de données (approche fichiers), on a souvent : duplication, incohérences, maintenance difficile.
+      </div>
+
+      <h3 id="mini-exemple-sql">Mini exemple SQL (très simple)</h3>
+      <p>Exemple : chercher les étudiants d’une filière.</p>
+      <pre><code>SELECT nom, prenom
+FROM etudiant
+WHERE filiere = 'INFO';</code></pre>
+
+      <h2 id="donnees-vs-information">3) Différence entre données et information</h2>
+
+      <p>
+        Les <strong>données</strong> sont des faits bruts (nombres, textes, dates).
+        L’<strong>information</strong> est une donnée interprétée avec un contexte (donc utile pour décider).
+      </p>
+
+      <figure class="figure-card">
+        <img src="img/chap1-donnees-vs-information.png" alt="Entrée données - traitement - sortie information" />
+        <figcaption>Données + traitement + contexte → information exploitable.</figcaption>
+      </figure>
+
+      <h2 id="schema-instance-meta">4) Schéma, instance et méta-données</h2>
+
+      <figure class="figure-card">
+        <img src="img/chap1-schema-instance-metadata.png" alt="Schéma, instance et méta-données" />
+        <figcaption>Schéma = structure, instance = contenu actuel, méta-données = description technique.</figcaption>
+      </figure>
+
+      <h2 id="architecture-3-niveaux">5) Architecture trois niveaux (ANSI/SPARC)</h2>
+
+      <figure class="figure-card">
+        <img src="img/chap1-architecture-3-niveaux.png" alt="Architecture ANSI/SPARC à trois niveaux" />
+        <figcaption>Trois niveaux : interne (physique), conceptuel (logique), externe (vues).</figcaption>
+      </figure>
+
+      <h2 id="mini-quiz">Mini-quiz</h2>
+      <ol>
+        <li>Quelle est la différence entre <em>schéma</em> et <em>instance</em> ?</li>
+        <li>Donne 3 avantages d’un SGBD.</li>
+        <li>Cite les 3 niveaux ANSI/SPARC.</li>
+      </ol>
+
+    </article>
+
+    <aside class="sidebar">
+      <div class="sidebar-title">Sommaire</div>
+      <nav id="toc" class="toc"></nav>
+      <div class="sidebar-footer">
+        <a class="pill" href="index.html">Retour au sommaire</a>
+      </div>
+    </aside>
+  </main>
+
+  <script src="../js/page-toc.js"></script>
+</body>
+</html>

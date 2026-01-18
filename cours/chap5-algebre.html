@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapitre 5 - Algèbre relationnelle</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <nav class="breadcrumb">
+      <a href="../index.html" aria-label="Accueil">🏠</a>
+      <span>/</span><a href="../index.html">Académie</a>
+      <span>/</span><a href="index.html">Cours Bases de données</a>
+      <span>/</span><span>Chapitre 5 : Algèbre relationnelle</span>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <article class="content">
+      <div class="meta">
+        <span>Temps de lecture approximative :</span>
+        <span class="badge" id="readingTime">—</span>
+      </div>
+
+      <h1 id="chap5">Chapitre 5 : L’Algèbre Relationnelle</h1>
+
+      <p>
+        L’<strong>algèbre relationnelle</strong> est un langage formel (mathématique) utilisé pour
+        <strong>interroger</strong> et <strong>manipuler</strong> les données dans une base relationnelle.
+        Elle constitue la base théorique du SQL : beaucoup de requêtes SQL peuvent être exprimées en algèbre relationnelle.
+      </p>
+
+      <div class="callout good">
+        <strong>Objectifs</strong><br/>
+        Connaître les opérateurs de base (σ, π, ×), maîtriser les opérateurs ensemblistes (∪, ∩, −),
+        comprendre les jointures (naturelle, θ-jointure), utiliser le renommage (ρ),
+        construire des expressions et des arbres d’algèbre relationnelle.
+      </div>
+
+      <h2 id="notions-fondamentales">1) Notions fondamentales</h2>
+
+      <h3 id="relation-entree-sortie">1.1 Relation d’entrée et relation de sortie</h3>
+      <p>
+        Dans l’algèbre relationnelle, les <strong>entrées</strong> sont des relations (tables) et chaque opération produit
+        une <strong>nouvelle relation</strong> (résultat).
+      </p>
+      <div class="callout good">
+        <strong>Propriété de fermeture</strong><br/>
+        Le résultat d’une opération en algèbre relationnelle est toujours une relation.
+      </div>
+
+      <h3 id="exemple-schema">1.2 Exemple de base (schéma)</h3>
+      <p>On utilisera ces relations :</p>
+      <ul>
+        <li><strong>ETUDIANT</strong>(NumEtu, Nom, Prenom, CodeFiliere)</li>
+        <li><strong>FILIERE</strong>(CodeFiliere, NomFiliere)</li>
+        <li><strong>COURS</strong>(CodeCours, Intitule, NbCredits, CodeFiliere)</li>
+        <li><strong>INSCRIPTION</strong>(NumEtu, CodeCours, Note)</li>
+      </ul>
+
+      <h2 id="operateurs-base">2) Opérateurs de base</h2>
+
+      <h3 id="selection-sigma">2.1 Sélection (σ)</h3>
+      <p>
+        La <strong>sélection</strong> filtre les tuples (lignes) d’une relation selon une condition.
+      </p>
+
+      <div class="callout">
+        <strong>Notation</strong><br/>
+        <code>σ_condition(R)</code>
+      </div>
+
+      <p><strong>Exemple :</strong> afficher les étudiants de la filière INFO :</p>
+      <pre><code>σ_{CodeFiliere='INFO'}(ETUDIANT)</code></pre>
+
+      <p><strong>Conditions possibles :</strong></p>
+      <ul>
+        <li>Comparaisons : =, ≠, &lt;, &gt;, ≤, ≥</li>
+        <li>Logique : AND (∧), OR (∨), NOT (¬)</li>
+      </ul>
+
+      <p>Exemple :</p>
+      <pre><code>σ_{Note ≥ 10 ∧ CodeCours='BD1'}(INSCRIPTION)</code></pre>
+
+      <figure class="figure-card">
+        <img src="img/chap5-selection-sigma.png" alt="Opérateur de sélection σ" />
+        <figcaption>La sélection σ conserve uniquement les lignes qui vérifient une condition.</figcaption>
+      </figure>
+
+      <h3 id="projection-pi">2.2 Projection (π)</h3>
+      <p>
+        La <strong>projection</strong> garde seulement certaines colonnes (attributs) d’une relation.
+      </p>
+
+      <div class="callout">
+        <strong>Notation</strong><br/>
+        <code>π_{A1, A2, ..., Ak}(R)</code>
+      </div>
+
+      <div class="callout warn">
+        <strong>Important</strong><br/>
+        La projection élimine automatiquement les doublons (théorie des ensembles).
+      </div>
+
+      <p><strong>Exemple :</strong> afficher seulement le nom et le prénom :</p>
+      <pre><code>π_{Nom, Prenom}(ETUDIANT)</code></pre>
+
+      <figure class="figure-card">
+        <img src="img/chap5-projection-pi.png" alt="Opérateur de projection π" />
+        <figcaption>La projection π choisit les colonnes et supprime les doublons.</figcaption>
+      </figure>
+
+      <h3 id="produit-cartesien">2.3 Produit cartésien (×)</h3>
+      <p>
+        Le <strong>produit cartésien</strong> combine chaque tuple de <em>R</em> avec chaque tuple de <em>S</em>.
+      </p>
+
+      <div class="callout">
+        <strong>Notation</strong><br/>
+        <code>R × S</code>
+      </div>
+
+      <p><strong>Exemple :</strong></p>
+      <pre><code>ETUDIANT × FILIERE</code></pre>
+
+      <p>
+        Si ETUDIANT contient 100 tuples et FILIERE contient 5 tuples :
+        <strong>résultat = 100 × 5 = 500 tuples</strong>.
+      </p>
+
+      <div class="callout warn">
+        <strong>Attention</strong><br/>
+        Peu utilisé seul, mais très utile avant une jointure (sélection sur un produit).
+      </div>
+
+      <figure class="figure-card">
+        <img src="img/chap5-produit-cartesien.png" alt="Produit cartésien" />
+        <figcaption>Produit cartésien : toutes les combinaisons possibles entre deux relations.</figcaption>
+      </figure>
+
+      <h2 id="operateurs-ensemblistes">3) Opérateurs ensemblistes</h2>
+
+      <div class="callout warn">
+        <strong>Condition de compatibilité</strong><br/>
+        Pour utiliser union / intersection / différence, les relations doivent être compatibles :
+        même nombre de colonnes, domaines compatibles, mêmes types.
+      </div>
+
+      <h3 id="union">3.1 Union (∪)</h3>
+      <p>
+        L’union renvoie tous les tuples qui sont dans R <strong>ou</strong> dans S, sans doublons.
+      </p>
+      <pre><code>R ∪ S</code></pre>
+
+      <p><strong>Exemple :</strong></p>
+      <pre><code>R = σ_{CodeFiliere='INFO'}(ETUDIANT)
+S = σ_{CodeFiliere='GESTION'}(ETUDIANT)
+R ∪ S</code></pre>
+
+      <h3 id="intersection">3.2 Intersection (∩)</h3>
+      <p>
+        L’intersection renvoie les tuples communs à R et S.
+      </p>
+      <pre><code>R ∩ S</code></pre>
+
+      <p><strong>Exemple :</strong> étudiants inscrits à BD1 et à ECO :</p>
+      <pre><code>R = σ_{CodeCours='BD1'}(INSCRIPTION)
+S = σ_{CodeCours='ECO'}(INSCRIPTION)
+π_{NumEtu}(R) ∩ π_{NumEtu}(S)</code></pre>
+
+      <h3 id="difference">3.3 Différence (−)</h3>
+      <p>
+        La différence renvoie les tuples présents dans R mais absents de S.
+      </p>
+      <pre><code>R − S</code></pre>
+
+      <p><strong>Exemple :</strong> étudiants inscrits à BD1 mais pas à ECO :</p>
+      <pre><code>π_{NumEtu}(σ_{CodeCours='BD1'}(INSCRIPTION))
+−
+π_{NumEtu}(σ_{CodeCours='ECO'}(INSCRIPTION))</code></pre>
+
+      <figure class="figure-card">
+        <img src="img/chap5-operations-ensemblistes-venn.png" alt="Opérations ensemblistes (Venn)" />
+        <figcaption>Opérations ensemblistes : union, intersection et différence (illustration type Venn).</figcaption>
+      </figure>
+
+      <h2 id="operateurs-jointure">4) Opérateurs de jointure</h2>
+
+      <h3 id="theta-jointure">4.1 Theta-jointure (⋈θ)</h3>
+      <p>
+        La <strong>θ-jointure</strong> est une jointure basée sur une condition θ ( =, &lt;, &gt;, … ).
+      </p>
+
+      <div class="callout">
+        <strong>Notation</strong><br/>
+        <code>R ⋈_{θ} S</code>
+      </div>
+
+      <p>
+        On peut l’exprimer avec un produit cartésien puis une sélection :
+      </p>
+      <pre><code>R ⋈_{θ} S = σ_{θ}(R × S)</code></pre>
+
+      <p><strong>Exemple :</strong> associer étudiants et inscriptions :</p>
+      <pre><code>ETUDIANT ⋈_{ETUDIANT.NumEtu = INSCRIPTION.NumEtu} INSCRIPTION</code></pre>
+
+      <figure class="figure-card">
+        <img src="img/chap5-theta-jointure.png" alt="Theta-jointure" />
+        <figcaption>Theta-jointure : jointure basée sur une condition explicite.</figcaption>
+      </figure>
+
+      <h3 id="jointure-naturelle">4.2 Jointure naturelle (⋈)</h3>
+      <p>
+        La <strong>jointure naturelle</strong> relie automatiquement R et S sur les attributs ayant le même nom,
+        puis supprime l’attribut dupliqué.
+      </p>
+
+      <div class="callout">
+        <strong>Notation</strong><br/>
+        <code>R ⋈ S</code>
+      </div>
+
+      <p><strong>Exemple :</strong> si ETUDIANT(..., CodeFiliere) et FILIERE(CodeFiliere, NomFiliere) :</p>
+      <pre><code>ETUDIANT ⋈ FILIERE</code></pre>
+
+      <p>
+        Condition implicite :
+        <code>ETUDIANT.CodeFiliere = FILIERE.CodeFiliere</code>
+      </p>
+
+      <figure class="figure-card">
+        <img src="img/chap5-jointure-naturelle.png" alt="Jointure naturelle" />
+        <figcaption>Jointure naturelle : se fait sur les colonnes communes (même nom).</figcaption>
+      </figure>
+
+      <h3 id="diff-jointures">4.3 Différence entre jointure naturelle et theta-jointure</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Condition</th>
+            <th>Colonnes dupliquées</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>θ-jointure</td>
+            <td>explicite (R.A = S.B)</td>
+            <td>oui (en général)</td>
+          </tr>
+          <tr>
+            <td>naturelle</td>
+            <td>automatique (mêmes noms)</td>
+            <td>supprimées</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="renommage">5) Renommage (ρ)</h2>
+      <p>
+        Le renommage sert à renommer une relation ou des attributs,
+        et à éviter les ambiguïtés (surtout pour les jointures et auto-jointures).
+      </p>
+
+      <div class="callout">
+        <strong>Notations</strong><br/>
+        <code>ρ_{NouveauNom}(R)</code><br/>
+        <code>ρ_{R(A,B,C)}(R)</code>
+      </div>
+
+      <p><strong>Exemple :</strong> renommer NumEtu en Id :</p>
+      <pre><code>ρ_{ETU(Id,Nom,Prenom,CodeFiliere)}(ETUDIANT)</code></pre>
+
+      <p><strong>Exemple auto-jointure :</strong></p>
+      <pre><code>ρ_{E1}(EMPLOYE) ⋈_{E1.NumManager = E2.NumEmp} ρ_{E2}(EMPLOYE)</code></pre>
+
+      <!-- Si tu ajoutes l’image du renommage :
+      <figure class="figure-card">
+        <img src="img/chap5-renommage-rho.png" alt="Renommage rho" />
+        <figcaption>Renommage : renommer une relation / ses attributs pour éviter les ambiguïtés.</figcaption>
+      </figure>
+      -->
+
+      <h2 id="expressions">6) Expressions en algèbre relationnelle</h2>
+      <p>
+        Une expression combine plusieurs opérateurs.
+      </p>
+
+      <h3 id="exemple-expression">Exemple : noms des étudiants inscrits à BD1</h3>
+      <ol>
+        <li>Sélectionner les inscriptions de BD1</li>
+        <li>Joindre avec ETUDIANT</li>
+        <li>Projeter Nom, Prenom</li>
+      </ol>
+
+      <pre><code>π_{Nom,Prenom}(
+  ETUDIANT ⋈_{ETUDIANT.NumEtu = INSCRIPTION.NumEtu}
+  σ_{CodeCours='BD1'}(INSCRIPTION)
+)</code></pre>
+
+      <h2 id="arbres-algebre">7) Arbres d’algèbre relationnelle</h2>
+      <p>
+        Un <strong>arbre</strong> représente graphiquement une expression :
+        feuilles = relations, nœuds = opérateurs, racine = résultat final.
+      </p>
+
+      <p><strong>Expression :</strong></p>
+      <pre><code>π_{Nom,Prenom}(
+  ETUDIANT ⋈_{NumEtu}
+  σ_{CodeCours='BD1'}(INSCRIPTION)
+)</code></pre>
+
+      <p><strong>Arbre (texte) :</strong></p>
+      <pre><code>           πNom,Prenom
+                |
+              ⋈(NumEtu)
+             /       \
+        ETUDIANT   σCodeCours='BD1'
+                     |
+                 INSCRIPTION</code></pre>
+
+      <figure class="figure-card">
+        <img src="img/chap5-arbre-algebre.png" alt="Arbre d'algèbre relationnelle" />
+        <figcaption>Arbre d’algèbre : représentation graphique d’une expression.</figcaption>
+      </figure>
+
+      <h2 id="resume-util">8) Petit résumé (très utile)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Opérateur</th>
+            <th>Symbole</th>
+            <th>Rôle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Sélection</td><td>σ</td><td>Filtrer lignes</td></tr>
+          <tr><td>Projection</td><td>π</td><td>Choisir colonnes</td></tr>
+          <tr><td>Produit</td><td>×</td><td>Combiner toutes les lignes</td></tr>
+          <tr><td>Union</td><td>∪</td><td>R ou S</td></tr>
+          <tr><td>Intersection</td><td>∩</td><td>R et S</td></tr>
+          <tr><td>Différence</td><td>−</td><td>R sans S</td></tr>
+          <tr><td>Theta-jointure</td><td>⋈θ</td><td>Jointure condition</td></tr>
+          <tr><td>Jointure naturelle</td><td>⋈</td><td>Jointure sur attributs communs</td></tr>
+          <tr><td>Renommage</td><td>ρ</td><td>Renommer table/attribut</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="mini-quiz">Mini-quiz</h2>
+      <ol>
+        <li>Quelle est la différence entre sélection et projection ?</li>
+        <li>Pourquoi les opérations ensemblistes exigent des relations compatibles ?</li>
+        <li>Comment exprimer une θ-jointure avec × et σ ?</li>
+        <li>Quelle est la différence entre jointure naturelle et θ-jointure ?</li>
+        <li>Pourquoi a-t-on besoin du renommage dans une auto-jointure ?</li>
+      </ol>
+    </article>
+
+    <aside class="sidebar">
+      <div class="sidebar-title">Sommaire</div>
+      <nav id="toc" class="toc"></nav>
+      <div class="sidebar-footer">
+        <a class="pill" href="index.html">Retour au sommaire</a>
+      </div>
+    </aside>
+  </main>
+
+  <script src="../js/page-toc.js"></script>
+</body>
+</html>
